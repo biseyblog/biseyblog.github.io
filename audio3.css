@@ -102,7 +102,7 @@
  body .container .player .info-box .track-info-box .audio-time {
 	 display: inline-block;
 	 padding: 0 0 0 5px;
-	 width: 88px;
+	 width: 120px;
 }
  body .container .player .info-box .track-info-box:before, body .container .player .info-box .track-info-box:after {
 	 content: " ";
