@@ -35,7 +35,7 @@
         <embed name="$1" src="$2?playerInstance='+audiojs+'.instances[\'$1\']&datetime=$3" width="1" height="1" allowscriptaccess="always"> \
       </object>',
 
-    // ### The main settings object
+    // ### The main settings object 
     // Where all the default settings are stored. Each of these variables and methods can be overwritten by the user-provided `options` object.
     settings: {
       autoplay: false,
