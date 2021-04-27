@@ -41,9 +41,9 @@
       autoplay: false,
       loop: false,
       preload: true,
-      imageLocation: path + 'https://biseyblog.github.io/audiojs/player-graphics.gif',
-      retinaImageLocation: path + 'https://biseyblog.github.io/audiojs/player-graphics@2x.gif',
-      swfLocation: path + 'https://biseyblog.github.io/audiojs/audiojs.swf',
+      imageLocation: path + 'player-graphics.gif',
+      retinaImageLocation: path + 'player-graphics@2x.gif',
+      swfLocation: path + 'audiojs.swf',
       useFlash: (function() {
         var a = document.createElement('audio');
         return !(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
