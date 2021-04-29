@@ -50,6 +50,7 @@ a.button {
     position: relative;
     text-align: center;
     text-decoration: none;
+    width: -webkit-fill-available;
     text-shadow: 0 1px 0 #fafafa; }
     
 a.button:hover {
