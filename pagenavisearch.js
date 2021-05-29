@@ -1,80 +1,200 @@
-function pageNavi(o) {
-    var m = location.href,
-        l = m.indexOf("/search/label/") != -1,
-        a = l ? m.substr(m.indexOf("/search/label/") + 14, m.length) : "";
-    a = a.indexOf("?") != -1 ? a.substr(0, a.indexOf("?")) : a;
-    var g = l ? "/search/label/" + a + "?updated-max=" : "/search?q=updated-max=",
-        k = o.feed.entry.length,
-        e = Math.ceil(k / pageNaviConf.perPage);
-    if (e <= 1) {
-        return
-    }
-    var n = 1,
-        h = [""];
-    l ? h.push("/search/label/" + a + "?max-results=" + pageNaviConf.perPage) : h.push("/?max-results=" + pageNaviConf.perPage);
-    for (var d = 2; d <= e; d++) {
-        var c = (d - 1) * pageNaviConf.perPage - 1,
-            b = o.feed.entry[c].published.$t,
-            f = b.substring(0, 19) + b.substring(23, 29);
-        f = encodeURIComponent(f);
-        if (m.indexOf(f) != -1) {
-            n = d
+    if (typeof firstText == "undefined") firstText = "First"; 
+    if (typeof lastText == "undefined") lastText = "Last";
+    var noPage;
+    var currentPage;
+    var currentPageNo;
+    var postLabel;
+    pagecurrentg();
+
+    function looppagecurrentg(pageInfo) {
+        var html = '';
+        pageNumber = parseInt(numPages / 2);
+        if (pageNumber == numPages - pageNumber) {
+            numPages = pageNumber * 2 + 1
         }
-        h.push(g + f + "&max-results=" + pageNaviConf.perPage)
+        pageStart = currentPageNo - pageNumber;
+        if (pageStart < 1) pageStart = 1;
+        lastPageNo = parseInt(pageInfo / perPage) + 1;
+        if (lastPageNo - 1 == pageInfo / perPage) lastPageNo = lastPageNo - 1;
+        pageEnd = pageStart + numPages - 1;
+        if (pageEnd > lastPageNo) pageEnd = lastPageNo;
+        html += "<span class='showpageOf'>Page " + currentPageNo + ' of ' + lastPageNo + "</span>";
+        var prevNumber = parseInt(currentPageNo) - 1;
+      
+		//Iccsi was here, doing magic      
+        if (currentPageNo > 1) {
+			if (currentPage == "page") {
+			  html += '<span class="showpage firstpage"><a href="' + home_page + '">' + firstText + '</a></span>'
+			} else {
+			  html += '<span class="displaypageNum firstpage"><a href="/search/label/' + postLabel + '?&max-results=' + perPage + '">' + firstText + '</a></span>'
+			}
+		}
+		
+		if (currentPageNo > 2) {
+            if (currentPageNo == 3) { 
+                if (currentPage == "page") {
+                    html += '<span class="showpage"><a href="' + home_page + '">' + prevText + '</a></span>'
+                } else {
+                    html += '<span class="displaypageNum"><a href="/search/label/' + postLabel + '?&max-results=' + perPage + '">' + prevText + '</a></span>'
+                }
+            } else {
+                if (currentPage == "page") {
+                    html += '<span class="displaypageNum"><a href="#" onclick="redirectpage(' + prevNumber + ');return false">' + prevText + '</a></span>'
+                } else {
+                    html += '<span class="displaypageNum"><a href="#" onclick="redirectlabel(' + prevNumber + ');return false">' + prevText + '</a></span>'
+                }
+            }
+        }
+        if (pageStart > 1) {
+            if (currentPage == "page") {
+                html += '<span class="displaypageNum"><a href="' + home_page + '">1</a></span>'
+            } else {
+                html += '<span class="displaypageNum"><a href="/search/label/' + postLabel + '?&max-results=' + perPage + '">1</a></span>'
+            }
+        }
+        if (pageStart > 2) {
+            html += ' ... '
+        }
+        for (var jj = pageStart; jj <= pageEnd; jj++) {
+            if (currentPageNo == jj) {
+                html += '<span class="pagecurrent">' + jj + '</span>'
+            } else if (jj == 1) {
+                if (currentPage == "page") {
+                    html += '<span class="displaypageNum"><a href="' + home_page + '">1</a></span>'
+                } else {
+                    html += '<span class="displaypageNum"><a href="/search/label/' + postLabel + '?&max-results=' + perPage + '">1</a></span>'
+                }
+            } else {
+                if (currentPage == "page") {
+                    html += '<span class="displaypageNum"><a href="#" onclick="redirectpage(' + jj + ');return false">' + jj + '</a></span>'
+                } else {
+                    html += '<span class="displaypageNum"><a href="#" onclick="redirectlabel(' + jj + ');return false">' + jj + '</a></span>'
+                }
+            }
+        }
+        if (pageEnd < lastPageNo - 1) {
+            html += '...'
+        }
+        if (pageEnd < lastPageNo) {
+            if (currentPage == "page") {
+                html += '<span class="displaypageNum"><a href="#" onclick="redirectpage(' + lastPageNo + ');return false">' + lastPageNo + '</a></span>'
+            } else {
+                html += '<span class="displaypageNum"><a href="#" onclick="redirectlabel(' + lastPageNo + ');return false">' + lastPageNo + '</a></span>'
+            }
+        }
+
+
+        var nextnumber = parseInt(currentPageNo) + 1;
+        if (currentPageNo < (lastPageNo - 1)) {
+            if (currentPage == "page") {
+                html += '<span class="displaypageNum"><a href="#" onclick="redirectpage(' + nextnumber + ');return false">' + nextText + '</a></span>'
+            } else {
+                html += '<span class="displaypageNum"><a href="#" onclick="redirectlabel(' + nextnumber + ');return false">' + nextText + '</a></span>'
+            }
+		}
+		
+		if (currentPageNo < lastPageNo) {
+			//Iccsi was here, doing magic
+			if (currentPage == "page") {
+			  html += '<span class="displaypageNum lastpage"><a href="#" onclick="redirectpage(' + lastPageNo + ');return false">' + lastText + '</a></span>'
+			} else {
+			  html += '<span class="displaypageNum lastpage"><a href="#" onclick="redirectlabel(' + lastPageNo + ');return false">' + lastText + '</a></span>'
+			}
+        }
+
+        var pageArea = document.getElementsByName("pageArea");
+        var blogPager = document.getElementById("blog-pager");
+        for (var p = 0; p < pageArea.length; p++) {
+            pageArea[p].innerHTML = html
+        }
+        if (pageArea && pageArea.length > 0) {
+            html = ''
+        }
+        if (blogPager) {
+            blogPager.innerHTML = html
+        }
     }
-    pageNavi.show(h, n, e)
-}
-pageNavi.show = function(f, e, a) {
-    var d = Math.floor((pageNaviConf.numPages - 1) / 2),
-        g = pageNaviConf.numPages - 1 - d,
-        c = e - d;
-    if (c <= 0) {
-        c = 1
+
+    function totalcountdata(root) {
+        var feed = root.feed;
+        var totaldata = parseInt(feed.openSearch$totalResults.$t, 10);
+        console.log(totaldata);
+        looppagecurrentg(totaldata)
     }
-    endPage = e + g;
-    if ((endPage - c) < pageNaviConf.numPages) {
-        endPage = c + pageNaviConf.numPages - 1
+
+    function pagecurrentg() {
+        var thisUrl = urlactivepage;
+        if (thisUrl.indexOf("/search/label/") != -1) {
+            if (thisUrl.indexOf("?updated-max") != -1) {
+                postLabel = thisUrl.substring(thisUrl.indexOf("/search/label/") + 14, thisUrl.indexOf("?updated-max"))
+            } else {
+                postLabel = thisUrl.substring(thisUrl.indexOf("/search/label/") + 14, thisUrl.indexOf("?&max"))
+            }
+        }
+        if (thisUrl.indexOf(".html") == -1) {
+            if (thisUrl.indexOf("/search/label/") == -1) {
+                currentPage = "page";
+                if (urlactivepage.indexOf("#PageNo=") != -1) {
+                    currentPageNo = urlactivepage.substring(urlactivepage.indexOf("#PageNo=") + 8, urlactivepage.length)
+                } else {
+                    currentPageNo = 1
+                }
+                if(thisUrl.indexOf("q=") == -1){
+                	document.write("<script src=\"" + home_page + "feeds/posts/summary?max-results=1&alt=json-in-script&callback=totalcountdata\"><\/script>")
+                } else {
+                	document.write("<script src=\"" + home_page + "feeds/posts/summary?q=" + thisUrl.split("?")[1].split("q=")[1].split("&")[0] + "&alt=json-in-script&callback=totalcountdata\"><\/script>")
+                }
+           } else {
+                currentPage = "label";
+                if (thisUrl.indexOf("&max-results=") == -1) {
+                    perPage = 20
+                }
+                if (urlactivepage.indexOf("#PageNo=") != -1) {
+                    currentPageNo = urlactivepage.substring(urlactivepage.indexOf("#PageNo=") + 8, urlactivepage.length)
+                } else {
+                    currentPageNo = 1
+                }
+                document.write('<script src="' + home_page + 'feeds/posts/summary/-/' + postLabel + '?alt=json-in-script&callback=totalcountdata&max-results=1" ><\/script>')
+            }
+        }
     }
-    if (endPage > a) {
-        endPage = a;
-        c = a - pageNaviConf.numPages + 1
-    }
-    if (c <= 0) {
-        c = 1
-    }
-    var b = '<span class="pages">Pages ' + e + ' of ' + a + "</span> ";
-    if (c > 1) {
-        b += '<a href="' + f[1] + '">' + pageNaviConf.firstText + "</a>"
-    }
-    if (e > 1) {
-        b += '<a href="' + f[e - 1] + '">' + pageNaviConf.prevText + "</a>"
-    }
-    for (i = c; i <= endPage; ++i) {
-        if (i == e) {
-            b += '<span class="current">' + i + "</span>"
+
+    function redirectpage(numberpage) {
+        jsonstart = (numberpage - 1) * perPage;
+        noPage = numberpage;
+        var nameBody = document.getElementsByTagName('head')[0];
+        var newInclude = document.createElement('script');
+        newInclude.type = 'text/javascript';
+        if(urlactivepage.indexOf("?q=") == -1){
+        	newInclude.setAttribute("src", home_page + "feeds/posts/summary?start-index=" + jsonstart + "&max-results=1&alt=json-in-script&callback=finddatepost");
         } else {
-            b += '<a href="' + f[i] + '">' + i + "</a>"
+        	newInclude.setAttribute("src", home_page + "feeds/posts/summary?start-index=" + jsonstart + "&alt=json-in-script&q="+ urlactivepage.split("?")[1].split("q=")[1].split("&")[0] +"&callback=finddatepost");	
         }
+        nameBody.appendChild(newInclude);
     }
-    if (e < a) {
-        b += '<a href="' + f[e + 1] + '">' + pageNaviConf.nextText + "</a>"
+
+    function redirectlabel(numberpage) {
+        jsonstart = (numberpage - 1) * perPage;
+        noPage = numberpage;
+        var nameBody = document.getElementsByTagName('head')[0];
+        var newInclude = document.createElement('script');
+        newInclude.type = 'text/javascript';
+        newInclude.setAttribute("src", home_page + "feeds/posts/summary/-/" + postLabel + "?start-index=" + jsonstart + "&max-results=1&alt=json-in-script&callback=finddatepost");
+        nameBody.appendChild(newInclude)
     }
-    if (endPage < a) {
-        b += '<a href="' + f[a] + '">' + pageNaviConf.lastText + "</a>"
+
+    function finddatepost(root) {
+        post = root.feed.entry[0];
+        var timestamp1 = post.published.$t.substring(0, 19) + post.published.$t.substring(23, 29);
+        var timestamp = encodeURIComponent(timestamp1);
+        if (currentPage == "page") {
+        	if(urlactivepage.indexOf("?q=") == -1){
+            		var pAddress = "/search?updated-max=" + timestamp + "&max-results=" + perPage + "#PageNo=" + noPage
+        	} else {
+            		var pAddress = "/search?updated-max=" + timestamp + "&q="+ urlactivepage.split("?")[1].split("q=")[1].split("&")[0] +"&max-results=" + perPage + "#PageNo=" + noPage
+        		}
+        	} else {
+            var pAddress = "/search/label/" + postLabel + "?updated-max=" + timestamp + "&max-results=" + perPage + "#PageNo=" + noPage
+        }
+        location.href = pAddress
     }
-    document.write(b)
-};
-(function() {
-    var b = location.href;
-    if (b.indexOf("?q=") != -1 || b.indexOf(".html") != -1) {
-        return
-    }
-    var d = b.indexOf("/search/label/") + 14;
-    if (d != 13) {
-        var c = b.indexOf("?"),
-            a = (c == -1) ? b.substring(d) : b.substring(d, c);
-        document.write('<script type="text/javascript" src="/feeds/posts/summary/-/' + a + '?alt=json-in-script&callback=pageNavi&max-results=99999"><\/script>')
-    } else {
-        document.write('<script type="text/javascript" src="/feeds/posts/summary?alt=json-in-script&callback=pageNavi&max-results=99999"><\/script>')
-    }
-})();
