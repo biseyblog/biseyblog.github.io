@@ -3,7 +3,7 @@ function pageNavi(o) {
         l = m.indexOf("/search/label/") != -1,
         a = l ? m.substr(m.indexOf("/search/label/") + 14, m.length) : "";
     a = a.indexOf("?") != -1 ? a.substr(0, a.indexOf("?")) : a;
-    var g = l ? "/search/label/" + a + "?updated-max=" : "/search?q=updated-max=",
+    var g = l ? "/search/label/" + a + "?updated-max=" : "/search?updated-max=",
         k = o.feed.entry.length,
         e = Math.ceil(k / pageNaviConf.perPage);
     if (e <= 1) {
