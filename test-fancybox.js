@@ -320,8 +320,11 @@
         isImage: function(a) {
             return q(a) && a.match(/(^data:image\/.*,)|(\.(jp(e|g|eg)|gif|png|bmp|webp|svg)((\?|#).*)?$)/i)
         },
+		isImage: function(a) {
+            return q(a) && a.match(/(blogger.googleusercontent.com/img/a\/.*,)/i)
+        },
         isSWF: function(a) {
-            return q(a) && a.match('a[href^="https://blogger.googleusercontent.com/img/a/"]:has(img)')
+            return q(a) && a.match(/\.(swf)((\?|#).*)?$/i)
         },
         _start: function(a) {
             var d = {},
